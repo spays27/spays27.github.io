@@ -1,0 +1,988 @@
+<!doctype html>
+<html lang="es">
+	<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+	<title>Prueba - Tienda deportiva</title>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="miestilo.css">
+</head>
+<body>
+		<header class="site-header">
+				<div class="container header-grid">
+					<div class="nav-left">
+						<div class="brand">
+							<div class="logo">
+								<!-- simple mark logo; replace with your logo.svg if desired -->
+								<svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="#111"/><path d="M7 12h10" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/></svg>
+							</div>
+							<div class="site-name">AIR SPORT</div>
+						</div>
+					</div>
+					<nav class="nav nav-center">
+			    <div class="nav-item collections">
+				    <a href="#productos" class="muted">Colecciones ▾</a>
+					<button class="toggle-btn" aria-expanded="false" aria-label="Abrir colecciones" data-tooltip="Anclar menú">▾</button>
+				    <div class="collections-dropdown" role="menu">
+								<a href="#productos" data-target="male">Hombre</a>
+								<a href="#productos" data-target="female">Mujer</a>
+								<a href="#productos" data-target="kids">Niños</a>
+								<a href="#productos" data-target="sale">Rebajas</a>
+								<a href="#colaboraciones" data-target="colabs">Colaboraciones</a>
+							</div>
+						</div>
+						<div class="nav-item collaborations">
+							<a href="#colaboraciones" class="muted">Colaboraciones ▾</a>
+							<button class="toggle-btn" aria-expanded="false" aria-label="Abrir colaboraciones" data-tooltip="Anclar menú">▾</button>
+							<div class="collabs-dropdown" role="menu">
+								<a href="#colaboraciones">Ver colaboraciones</a>
+								<a href="#colaboraciones">Air Sport X NIKE</a>
+								<a href="#colaboraciones">Air Sport X ADIDAS</a>
+							</div>
+						</div>
+					</nav>
+					<button class="hamburger" id="hamburger" aria-label="Abrir menú">
+						<span class="bar" aria-hidden="true"></span>
+					</button>
+					<div class="nav-right">
+						<div class="header-search" title="Buscar productos">
+							<!-- fixed search icon (no comma) -->
+							<svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="11" cy="11" r="6" stroke="#111" stroke-width="1.6" fill="none"/><path d="M21 21l-4.35-4.35" stroke="#111" stroke-width="1.6" stroke-linecap="round"/></svg>
+							<input id="headerSearch" placeholder="Buscar..." />
+						</div>
+						<div class="header-icons">
+							<button class="icon-btn badge" id="btnFavorites" title="Favoritos" data-count="0" aria-label="Favoritos">
+								<!-- heart -->
+								<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 21s-7.5-4.8-9.5-7.2C-1 9.6 3.6 4 8.9 6.1 11 7.1 12 9 12 9s1-1.9 3.1-2.9C20.4 4 25 9.6 21.5 13.8 19.5 16.2 12 21 12 21z" fill="#ef4444"/></svg>
+							</button>
+							<button class="icon-btn badge" id="btnCart" title="Cesta" data-count="0" aria-label="Cesta">
+								<!-- improved cart icon -->
+								<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M7 4h-2l-1 2h2l1-2zm0 0" fill="none"/><path d="M7 4h12l-1.2 6.4A2 2 0 0 1 15.9 12H9.6L8.8 9H19" stroke="#111" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/><circle cx="10" cy="19" r="1.3" fill="#111"/><circle cx="18" cy="19" r="1.3" fill="#111"/></svg>
+							</button>
+							<button class="icon-btn" id="btnUser" title="Iniciar sesión" aria-label="Iniciar sesión">Iniciar sesión</button>
+						</div>
+						<a href="#contacto" class="btn small">Soporte</a>
+						<a href="admin.html" class="muted" style="margin-left:1rem">Admin</a>
+					</div>
+				</div>
+	</header>
+
+	<!-- ARIA live region for announcements -->
+	<div id="ariaAnnounce" aria-live="polite" aria-atomic="true" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;"></div>
+
+	<!-- move search/filters here to show under header visually (positioned above content) -->
+	<section class="container search-bar" id="topSearch">
+			<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+					<input id="productSearch" type="search" placeholder="Buscar productos (nombre, descripción)" style="flex:1;padding:.8rem;border-radius:10px;border:1px solid #e8e8f0">
+				<select id="filterGender" style="padding:.6rem;border-radius:8px;border:1px solid #eee">
+					<option value="all">Todos</option>
+					<option value="male">Hombre</option>
+					<option value="female">Mujer</option>
+					<option value="kids">Niños</option>
+				</select>
+				<div id="filterSize" style="display:flex;gap:.4rem;align-items:center">
+					<label style="font-size:.9rem" class="muted">Tallas:</label>
+					<label><input type="checkbox" value="S" class="sizeChk"> S</label>
+					<label><input type="checkbox" value="M" class="sizeChk" checked> M</label>
+					<label><input type="checkbox" value="L" class="sizeChk"> L</label>
+					<label><input type="checkbox" value="XL" class="sizeChk"> XL</label>
+                    <label><input type="checkbox" value="XL" class="sizeChk"> XXL</label>
+				</div>
+				<button id="btnClearFilters" class="btn">Limpiar</button>
+			</div>
+				<div style="margin-top:.6rem;display:flex;align-items:center;justify-content:space-between">
+					<div class="muted" id="resultsCounter">Mostrando 0 productos</div>
+					<div id="noResultsMsg" style="color:#b00;display:none">No se han encontrado productos que coincidan.</div>
+				</div>
+	</section>
+
+	<main>
+			<section class="hero hero-large">
+				<div class="container hero-inner">
+					<div class="hero-copy">
+						<h2 class="hero-title">Nuevo lanzamiento: Runner X Pro</h2>
+						<p class="hero-sub">Nuestro último modelo — más ligero, más rápido y con una nueva suela reactiva. Disponible ya!</p>
+						<div style="margin-top:1.2rem">
+							<a class="btn primary" href="#productos">Explorar productos</a>
+							<a class="btn" href="#contacto" style="margin-left:.6rem">Contacto</a>
+						</div>
+					</div>
+							<div class="hero-media">
+								<img src="https://www.vivemasvidas.com/uploads/Las-20-zapatillas-mas-valiosas-de-la-historia.jpg" alt="Imagen hero">
+							</div>
+				</div>
+			</section>
+
+			<section id="productos" class="container products">
+				<h3>Hombres</h3>
+				<div class="product-grid" data-section="male">
+					<article class="product" data-name="Runner X Pro" data-price="159" data-gender="male" data-sizes="S,M,L,XL">
+						<div class="media"><img src="https://images.unsplash.com/photo-1520975914084-6b27c3f8e9f9?w=800&q=80&auto=format&fit=crop&crop=entropy" alt="Runner X Pro"></div>
+						<h4>Runner X Pro</h4>
+						<p class="muted">Ligera y veloz — perfecta para correr.</p>
+						<p class="price">$159</p>
+						<button class="btn" onclick="openPedidoFromCard(this)">Pedir</button>
+					</article>
+					<article class="product" data-name="Sprint Elite" data-price="139" data-gender="male" data-sizes="M,L,XL">
+						<div class="media"><img src="https://images.unsplash.com/photo-1519744792095-2f2205e87b6f?w=800&q=80&auto=format&fit=crop&crop=entropy" alt="Sprint Elite"></div>
+						<h4>Sprint Elite</h4>
+						<p class="muted">Amortiguación superior para entrenamientos intensos.</p>
+						<p class="price">$139</p>
+						<button class="btn" onclick="openPedidoFromCard(this)">Pedir</button>
+					</article>
+					<article class="product" data-name="Trail Master" data-price="129" data-gender="male" data-sizes="M,L,XL">
+						<div class="media"><img src="https://images.unsplash.com/photo-1508609349937-5ec4ae374ebf?w=800&q=80&auto=format&fit=crop&crop=entropy" alt="Trail Master"></div>
+						<h4>Trail Master</h4>
+						<p class="muted">Agarre y durabilidad para todo terreno.</p>
+						<p class="price">$129</p>
+						<button class="btn" onclick="openPedidoFromCard(this)">Pedir</button>
+					</article>
+					<article class="product" data-name="Road Companion" data-price="99" data-gender="male" data-sizes="S,M,L">
+						<div class="media"><img src="https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=800&q=80&auto=format&fit=crop&crop=entropy" alt="Road Companion"></div>
+						<h4>Road Companion</h4>
+						<p class="muted">Cómodo y ligero para largas distancias.</p>
+						<p class="price">$99</p>
+						<button class="btn" onclick="openPedidoFromCard(this)">Pedir</button>
+					</article>
+
+				</div>
+				<div class="section-empty" style="display:none">No hay productos en esta sección.</div>
+
+				<!-- Colaboraciones section -->
+				<h3 id="colaboraciones">Colaboraciones</h3>
+				<div class="product-grid" data-section="colabs">
+					<article class="product" data-name="Colab Runner A" data-price="179" data-gender="male" data-sizes="M,L" data-collab="Marca A">
+						<div class="media"><img src="https://images.unsplash.com/photo-1520975914084-6b27c3f8e9f9?w=800&q=80&auto=format&fit=crop&crop=entropy" alt="Colab Runner"></div>
+						<h4>Colab Runner A</h4>
+						<p class="muted">Colaboración con NIKE — edición limitada.</p>
+						<p class="price">$179</p>
+						<button class="btn" onclick="openPedidoFromCard(this)">Pedir</button>
+					</article>
+					<article class="product" data-name="Colab Femme B" data-price="169" data-gender="female" data-sizes="S,M,L" data-collab="Marca B">
+						<div class="media"><img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&q=80&auto=format&fit=crop&crop=entropy" alt="Colab Femme"></div>
+						<h4>Colab Femme B</h4>
+						<p class="muted">Colaboración con ADIDAS.</p>
+						<p class="price">$169</p>
+						<button class="btn" onclick="openPedidoFromCard(this)">Pedir</button>
+					</article>
+				</div>
+				<div class="section-empty" style="display:none">No hay productos en esta sección.</div>
+
+				<h3>Mujer</h3>
+				<div class="product-grid" data-section="female">
+					<article class="product" data-name="Fly Femme" data-price="149" data-gender="female" data-sizes="S,M,L">
+						<div class="media"><img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&q=80&auto=format&fit=crop&crop=entropy" alt="Fly Femme"></div>
+						<h4>Fly Femme</h4>
+						<p class="muted">Diseño estilizado y gran confort.</p>
+						<p class="price">$149</p>
+						<button class="btn" onclick="openPedidoFromCard(this)">Pedir</button>
+					</article>
+					<article class="product" data-name="Glow Flex" data-price="129" data-gender="female" data-sizes="S,M,L">
+						<div class="media"><img src="https://images.unsplash.com/photo-1549576490-b0b4831ef60a?w=800&q=80&auto=format&fit=crop&crop=entropy" alt="Glow Flex"></div>
+						<h4>Glow Flex</h4>
+						<p class="muted">Estilo y soporte para entrenamiento diario.</p>
+						<p class="price">$129</p>
+						<button class="btn" onclick="openPedidoFromCard(this)">Pedir</button>
+					</article>
+					<article class="product" data-name="City Sprint" data-price="109" data-gender="female" data-sizes="S,M,L">
+						<div class="media"><img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=800&q=80&auto=format&fit=crop&crop=entropy" alt="City Sprint"></div>
+						<h4>City Sprint</h4>
+						<p class="muted">Ligero, ideal para la ciudad.</p>
+						<p class="price">$109</p>
+						<button class="btn" onclick="openPedidoFromCard(this)">Pedir</button>
+					</article>
+					<article class="product" data-name="Urban She" data-price="119" data-gender="female" data-sizes="S,M,L">
+						<div class="media"><img src="https://images.unsplash.com/photo-1528701800489-476f4b7b9b6b?w=800&q=80&auto=format&fit=crop&crop=entropy" alt="Urban She"></div>
+						<h4>Urban She</h4>
+						<p class="muted">Comodidad para el día a día.</p>
+						<p class="price">$119</p>
+						<button class="btn" onclick="openPedidoFromCard(this)">Pedir</button>
+					</article>
+				</div>
+				<div class="section-empty" style="display:none">No hay productos en esta sección.</div>
+
+				<h3>Niños</h3>
+				<div class="product-grid" data-section="kids">
+					<article class="product" data-name="Mini Runner" data-price="69" data-gender="kids" data-sizes="S,M">
+						<div class="media"><img src="https://images.unsplash.com/photo-1549989474-7b9b3f6b8b3c?w=800&q=80&auto=format&fit=crop&crop=entropy" alt="Mini Runner"></div>
+						<h4>Mini Runner</h4>
+						<p class="muted">Ligero y resistente para pequeñas aventuras.</p>
+						<p class="price">$69</p>
+						<button class="btn" onclick="openPedidoFromCard(this)">Pedir</button>
+					</article>
+					<article class="product" data-name="Tiny Runner Pro" data-price="79" data-gender="kids" data-sizes="S,M">
+						<div class="media"><img src="https://images.unsplash.com/photo-1541976076758-03e4b6f3b5f0?w=800&q=80&auto=format&fit=crop&crop=entropy" alt="Tiny Runner Pro"></div>
+						<h4>Tiny Runner Pro</h4>
+						<p class="muted">Soporte y diversión para los peques.</p>
+						<p class="price">$79</p>
+						<button class="btn" onclick="openPedidoFromCard(this)">Pedir</button>
+					</article>
+					<article class="product" data-name="Junior Zoom" data-price="69" data-gender="kids" data-sizes="S,M">
+						<div class="media"><img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800&q=80&auto=format&fit=crop&crop=entropy" alt="Junior Zoom"></div>
+						<h4>Junior Zoom</h4>
+						<p class="muted">Colores brillantes y resistencia.</p>
+						<p class="price">$69</p>
+						<button class="btn" onclick="openPedidoFromCard(this)">Pedir</button>
+					</article>
+					<article class="product" data-name="Kids Fun" data-price="59" data-gender="kids" data-sizes="S,M">
+						<div class="media"><img src="https://images.unsplash.com/photo-1520975914084-6b27c3f8e9f9?w=800&q=80&auto=format&fit=crop&crop=entropy" alt="Kids Fun"></div>
+						<h4>Kids Fun</h4>
+						<p class="muted">Colores y confort para jugar todo el día.</p>
+						<p class="price">$59</p>
+						<button class="btn" onclick="openPedidoFromCard(this)">Pedir</button>
+					</article>
+				</div>
+				<div class="section-empty" style="display:none">No hay productos en esta sección.</div>
+
+				<h3>Rebajas</h3>
+				<div class="product-grid" data-section="sale">
+					<article class="product" data-name="Runner X - Oferta" data-price="109" data-gender="male" data-sizes="M,L" data-sale="true">
+						<div class="media"><img src="https://images.unsplash.com/photo-1519744792095-2f2205e87b6f?w=800&q=80&auto=format&fit=crop&crop=entropy" alt="Runner oferta"></div>
+						<h4>Runner X - Oferta</h4>
+						<p class="muted">Últimas unidades con descuento.</p>
+						<p class="price">$109</p>
+						<button class="btn" onclick="openPedidoFromCard(this)">Pedir</button>
+					</article>
+					<article class="product" data-name="Flash Sale" data-price="89" data-gender="female" data-sizes="S,M,L" data-sale="true" data-original-price="149">
+						<div class="media"><img src="https://images.unsplash.com/photo-1503342217505-b0a15c1c2a5d?w=800&q=80&auto=format&fit=crop&crop=entropy" alt="Flash Sale"></div>
+						<h4>Flash Sale</h4>
+						<p class="muted">Edición limitada con descuento.</p>
+						<p class="price">$89</p>
+						<button class="btn" onclick="openPedidoFromCard(this)">Pedir</button>
+					</article>
+					<article class="product" data-name="Clearance Runner" data-price="79" data-gender="male" data-sizes="M,L" data-sale="true" data-original-price="129">
+						<div class="media"><img src="https://images.unsplash.com/photo-1503602642458-232111445657?w=800&q=80&auto=format&fit=crop&crop=entropy" alt="Clearance Runner"></div>
+						<h4>Clearance Runner</h4>
+						<p class="muted">Últimas tallas en stock.</p>
+						<p class="price">$79</p>
+						<button class="btn" onclick="openPedidoFromCard(this)">Pedir</button>
+					</article>
+				</div>
+				<div class="section-empty" style="display:none">No hay productos en esta sección.</div>
+			</section>
+
+			<section id="contacto" class="container form-section">
+			<h3>Contacto</h3>
+			<form id="contactForm">
+				<label>Nombre
+					<input name="name" required>
+				</label>
+				<label>Email
+					<input name="email" type="email" required>
+				</label>
+				<label>Mensaje/Sugerencia
+					<textarea name="message" required></textarea>
+				</label>
+				<input type="hidden" name="type" value="contact">
+				<button class="btn primary" type="submit">Enviar</button>
+				<p id="contactMsg" class="msg"></p>
+			</form>
+			<div style="margin-top:1rem;">
+				<div><strong>Email:</strong> <a href="mailto:contacto@airsport.com">contacto@airsport.com</a></div>
+				<div><strong>Teléfono:</strong> +34 999 999 999</div>
+				<div style="margin-top:.8rem;display:flex;gap:12px;align-items:center">
+					<a class="social" href="https://twitter.com/airsport" target="_blank" rel="noopener" aria-label="Twitter">
+						<!-- inline twitter svg -->
+						<svg viewBox="0 0 24 24" width="20" height="20" fill="#1DA1F2" aria-hidden="true"><path d="M22.46 6c-.77.35-1.6.59-2.46.7a4.3 4.3 0 0 0 1.88-2.38 8.59 8.59 0 0 1-2.72 1.04 4.28 4.28 0 0 0-7.3 3.9A12.14 12.14 0 0 1 3.15 4.7a4.28 4.28 0 0 0 1.33 5.72c-.66-.02-1.28-.2-1.82-.5v.05a4.28 4.28 0 0 0 3.43 4.19c-.33.09-.68.14-1.04.14-.25 0-.5-.02-.74-.07a4.28 4.28 0 0 0 3.99 2.97A8.59 8.59 0 0 1 2 19.54a12.12 12.12 0 0 0 6.56 1.92c7.88 0 12.2-6.53 12.2-12.19 0-.19 0-.39-.01-.58A8.7 8.7 0 0 0 24 5.64a8.48 8.48 0 0 1-2.54.7z"/></svg>
+					</a>
+					<a class="social" href="https://instagram.com/airsport" target="_blank" rel="noopener" aria-label="Instagram">
+						<!-- inline instagram svg -->
+						<svg viewBox="0 0 24 24" width="20" height="20" fill="#E1306C" aria-hidden="true"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm5 6.2A4.8 4.8 0 1 0 16.8 13 4.8 4.8 0 0 0 12 8.2zm6.4-.9a1.12 1.12 0 1 0 1.12 1.12A1.12 1.12 0 0 0 18.4 7.3z"/></svg>
+					</a>
+					<a class="social" href="https://facebook.com/airsport" target="_blank" rel="noopener" aria-label="Facebook">
+						<!-- inline facebook svg -->
+						<svg viewBox="0 0 24 24" width="20" height="20" fill="#1877F2" aria-hidden="true"><path d="M22 12.07C22 6.48 17.52 2 11.93 2S2 6.48 2 12.07c0 4.96 3.66 9.07 8.44 9.86v-6.99H7.9v-2.87h2.54V9.41c0-2.5 1.49-3.88 3.76-3.88 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.44 2.87h-2.34v6.99C18.34 21.14 22 17.02 22 12.07z"/></svg>
+					</a>
+				</div>
+			</div>
+		</section>
+
+
+
+
+			<!-- Pedido se hace desde cada tarjeta: modal abajo -->
+			<div id="orderModal" class="modal" aria-hidden="true">
+				<div class="modal-content">
+					<button class="modal-close" onclick="closeModal()">×</button>
+					<h3>Hacer pedido</h3>
+					<form id="orderForm">
+						<label>Producto
+							<input name="product" readonly>
+						</label>
+						<label>Talla
+							<select name="size">
+								<option value="S">S</option>
+								<option value="M" selected>M</option>
+								<option value="L">L</option>
+								<option value="XL">XL</option>
+							</select>
+						</label>
+						<label>Color
+							<select name="color">
+								<option value="Negro">Negro</option>
+								<option value="Blanco">Blanco</option>
+								<option value="Rojo">Rojo</option>
+							</select>
+						</label>
+						<label>Nombre
+							<input name="name" required>
+						</label>
+						<label>Email
+							<input name="email" type="email" required>
+						</label>
+						<label>Cantidad
+							<input name="quantity" type="number" min="1" value="1" required>
+						</label>
+						<input type="hidden" name="type" value="order">
+						<div class="order-summary" style="margin-top:.6rem;padding:.6rem;border-radius:8px;background:#fbfbff;border:1px solid #f0eff8">
+							<div>Precio unidad: <span id="unitPrice">$0</span></div>
+							<div>Subtotal: <strong id="subtotal">$0</strong></div>
+						</div>
+						<div style="display:flex;gap:.6rem;margin-top:.8rem;align-items:center">
+						<button class="btn primary" id="btnSubmitOrder" type="submit">Enviar pedido</button>
+						<button class="btn" type="button" id="btnAddToCart">Agregar a cesta</button>
+							<button type="button" class="btn" onclick="closeModal()">Cancelar</button>
+							<button type="button" class="btn" id="btnDownloadTicket">Descargar ticket</button>
+							<p id="orderMsg" class="msg"></p>
+						</div>
+					</form>
+				</div>
+			</div>
+	</main>
+
+	<footer class="site-footer">
+		<div class="container">© 2025 AIR SPORT — v1.1</div>
+	</footer>
+
+	<!-- Cart side panel -->
+	<aside id="cartPanel" class="cart-panel" aria-hidden="true">
+		<div class="panel-header">
+			<h3>Tu cesta</h3>
+			<div>
+				<button class="btn" onclick="closeCart()">Cerrar</button>
+			</div>
+		</div>
+		<div class="items" id="cartItems"></div>
+		<div style="margin-top:.8rem;display:flex;justify-content:space-between;align-items:center">
+			<div><strong>Total:</strong> <span id="cartTotal">$0</span></div>
+			<div>
+				<button class="btn" onclick="closeCart()">Seguir comprando</button>
+				<button class="btn primary" id="checkoutBtn">Finalizar</button>
+			</div>
+		</div>
+	</aside>
+
+	<!-- Favorites side panel -->
+	<aside id="favPanel" class="fav-panel" aria-hidden="true">
+		<div class="panel-header">
+			<h3>Favoritos</h3>
+			<div>
+				<button class="btn" onclick="closeFav()">Cerrar</button>
+			</div>
+		</div>
+		<div class="items" id="favItems"></div>
+	</aside>
+
+	<!-- Auth modal (register/login) -->
+	<div id="authModal" class="modal" aria-hidden="true">
+		<div class="modal-content small">
+			<button class="modal-close" onclick="closeAuth()">×</button>
+			<h3 id="authTitle">Iniciar sesión / Registrarse</h3>
+			<form id="authForm">
+				<label>Nombre
+					<input name="name" required>
+				</label>
+				<label>Apellidos
+					<input name="surname" required>
+				</label>
+				<label>Email
+					<input name="email" type="email" required>
+				</label>
+				<label>Contraseña
+					<input name="password" type="password" required placeholder="Mín. 8 car., 1 mayúscula, 1 símbolo">
+				</label>
+				<div style="display:flex;gap:.6rem;margin-top:.6rem">
+					<button class="btn primary" type="submit">Registrarse / Guardar</button>
+					<button type="button" class="btn" onclick="closeAuth()">Cancelar</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<script>
+			// --- Local-first saving (no installation required) ---
+			// Submissions are stored in localStorage under key 'registros' as an array of objects.
+			// Admin page can export/download them as registros.jsonl or append them to a local file
+			// using the File System Access API (if the browser supports it).
+
+			function loadRegistros() {
+				try { return JSON.parse(localStorage.getItem('registros') || '[]'); }
+				catch (e) { return []; }
+			}
+
+			function saveRegistros(arr) {
+				localStorage.setItem('registros', JSON.stringify(arr));
+			}
+
+			async function tryPostToServer(data) {
+				// Try to POST to /submit if a server exists; ignore failures.
+				try {
+					const res = await fetch('/submit', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data)});
+					return res.ok;
+				} catch (e) { return false; }
+			}
+
+			function storeSubmission(data) {
+				const arr = loadRegistros();
+				arr.push(data);
+				saveRegistros(arr);
+				// dispatch event for listeners (admin) and optionally trigger auto-download if enabled
+				try{
+					window.dispatchEvent(new CustomEvent('registros:updated', {detail: data}));
+					if(localStorage.getItem('admin_auto_download') === '1'){
+						// create a jsonl blob and trigger download (timestamped)
+						const blob = new Blob(arr.map(d=>JSON.stringify(d)+"\n"), {type:'text/plain;charset=utf-8'});
+						const url = URL.createObjectURL(blob);
+						const a = document.createElement('a'); a.href = url; a.download = 'registros-' + (new Date()).toISOString().replace(/[:.]/g,'-') + '.jsonl'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+					}
+				}catch(e){ console.error('auto-download failed', e) }
+			}
+
+				// Modal controls for ordering from product cards
+				function openPedidoFromCard(btn){
+					const card = btn.closest('.product');
+					const name = card.getAttribute('data-name') || card.querySelector('h4').textContent;
+					openModal(name);
+				}
+
+				function openModal(productName){
+					const modal = document.getElementById('orderModal');
+					modal.setAttribute('aria-hidden','false');
+					modal.querySelector('input[name=product]').value = productName;
+					// set unit price from product card
+					const card = Array.from(document.querySelectorAll('.product')).find(c => (c.getAttribute('data-name')||'') === productName || c.querySelector('h4').textContent === productName);
+					let price = 0;
+					if(card && card.dataset.price) price = Number(card.dataset.price);
+					modal.querySelector('#unitPrice').textContent = '$' + price;
+					modal.querySelector('#subtotal').textContent = '$' + price;
+					modal.querySelector('input[name=quantity]').value = 1;
+					// try to select the first available size for this product
+					try{
+						const sizesStr = card?.dataset?.sizes || '';
+						const sizesArr = sizesStr ? sizesStr.split(',') : [];
+						if(sizesArr.length) modal.querySelector('select[name=size]').value = sizesArr[0];
+						else modal.querySelector('select[name=size]').value = 'M';
+					}catch(e){ modal.querySelector('select[name=size]').value = 'M'; }
+					modal.querySelector('select[name=color]').value = 'Negro';
+					modal.scrollIntoView({behavior:'smooth'});
+				}
+
+				function closeModal(){
+					const modal = document.getElementById('orderModal');
+					modal.setAttribute('aria-hidden','true');
+				}
+
+			function showMsg(elemId, text, ok=true) {
+				const el = document.getElementById(elemId);
+				el.textContent = text;
+				el.style.color = ok ? 'green' : 'red';
+				setTimeout(()=>{ el.textContent = '' }, 5000);
+			}
+
+			document.getElementById('contactForm').addEventListener('submit', async e => {
+				e.preventDefault();
+				const f = e.target;
+				const data = {
+					type: f.type.value,
+					name: f.name.value,
+					email: f.email.value,
+					message: f.message.value,
+					ts: new Date().toISOString()
+				};
+				// store locally
+				storeSubmission(data);
+				// also try server in background (optional)
+				await tryPostToServer(data);
+				showMsg('contactMsg', 'Gracias — mensaje guardado localmente.');
+				f.reset();
+			});
+
+			document.getElementById('orderForm').addEventListener('submit', async e => {
+				e.preventDefault();
+				const f = e.target;
+				const data = {
+					type: f.type.value,
+					name: f.name.value,
+					email: f.email.value,
+					product: f.product.value,
+					quantity: Number(f.quantity.value),
+					size: f.size ? f.size.value : null,
+					color: f.color ? f.color.value : null,
+					ts: new Date().toISOString()
+				};
+					storeSubmission(data);
+					await tryPostToServer(data);
+					showMsg('orderMsg', 'Pedido guardado localmente.');
+					f.reset();
+					setTimeout(()=> closeModal(), 600);
+			});
+
+			// update subtotal when quantity/size/color change
+			const orderForm = document.getElementById('orderForm');
+			orderForm.addEventListener('input', ()=>{
+				const qty = Number(orderForm.quantity.value || 1);
+				const unitText = document.getElementById('unitPrice').textContent.replace('$','') || '0';
+				const unit = Number(unitText);
+				document.getElementById('subtotal').textContent = '$' + (unit * qty);
+			});
+
+			// Add to cart from modal (requires size selection)
+			document.getElementById('btnAddToCart').addEventListener('click', ()=>{
+				const f = document.getElementById('orderForm');
+				const size = f.size ? f.size.value : null;
+				if(!size){ alert('Por favor selecciona una talla antes de añadir a la cesta.'); return; }
+				const item = {
+					name: f.product.value,
+					price: Number(document.getElementById('unitPrice').textContent.replace('$','')||0),
+					image: (Array.from(document.querySelectorAll('.product')).find(c => (c.getAttribute('data-name')||'') === f.product.value) || {}).querySelector?.('img')?.src || '',
+					size: size,
+					quantity: Number(f.quantity.value || 1)
+				};
+				addToCart(item);
+				showMsg('orderMsg', 'Añadido a la cesta.');
+				setTimeout(()=>{ showMsg('orderMsg',''); }, 2500);
+			});
+
+			// Download ticket
+			document.getElementById('btnDownloadTicket').addEventListener('click', ()=>{
+				const f = document.getElementById('orderForm');
+				const ticket = {
+					product: f.product.value,
+					size: f.size ? f.size.value : null,
+					color: f.color ? f.color.value : null,
+					quantity: Number(f.quantity.value || 1),
+					unitPrice: document.getElementById('unitPrice').textContent,
+					subtotal: document.getElementById('subtotal').textContent,
+					ts: new Date().toISOString()
+				};
+				const blob = new Blob([JSON.stringify(ticket, null, 2)], {type:'application/json;charset=utf-8'});
+				const url = URL.createObjectURL(blob);
+				const a = document.createElement('a'); a.href = url; a.download = 'ticket-' + ticket.product.replace(/\s+/g,'_') + '.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+			});
+
+			// --- Search & Filters ---
+			function matchesFilter(product, text, gender, size){
+				const txt = (text||'').toLowerCase();
+				const name = (product.getAttribute('data-name')||product.querySelector('h4').textContent||'').toLowerCase();
+				const desc = (product.querySelector('.muted')?.textContent||'').toLowerCase();
+				if(text && text.trim() !== '' && !(name.includes(txt) || desc.includes(txt))) return false;
+				if(gender && gender !== 'all'){
+					if((product.dataset.gender||'') !== gender) return false;
+				}
+				// size may be an array of selected sizes
+				if(Array.isArray(size) && size.length>0){
+					const sizes = (product.dataset.sizes||'').split(',');
+					// must have at least one intersection
+					if(!sizes.some(s => size.includes(s))) return false;
+				}
+				return true;
+			}
+
+			function getSelectedSizes(){
+				return Array.from(document.querySelectorAll('.sizeChk:checked')).map(i=>i.value);
+			}
+
+			function updateUrlFilters(text, gender, sizes){
+				const params = new URLSearchParams();
+				if(text) params.set('q', text);
+				if(gender && gender!=='all') params.set('gender', gender);
+				if(sizes && sizes.length) params.set('sizes', sizes.join(','));
+				const newUrl = location.pathname + '?' + params.toString();
+				history.replaceState({}, '', newUrl);
+			}
+
+			function loadUrlFilters(){
+				const params = new URLSearchParams(location.search);
+				const q = params.get('q') || '';
+				const gender = params.get('gender') || 'all';
+				const sizes = params.get('sizes') ? params.get('sizes').split(',') : [];
+				return {q, gender, sizes};
+			}
+
+			function applySearchFilters(){
+				const text = document.getElementById('productSearch').value || '';
+				const gender = document.getElementById('filterGender').value || 'all';
+				const sizes = getSelectedSizes();
+				const allSections = document.querySelectorAll('[data-section]');
+				let totalVisible = 0;
+				allSections.forEach(section => {
+					let anyVisible = false;
+					const items = section.querySelectorAll('.product');
+					items.forEach(p => {
+						const ok = matchesFilter(p, text, gender, sizes);
+						p.style.display = ok ? '' : 'none';
+						if(ok) { anyVisible = true; totalVisible++; }
+					});
+					section.previousElementSibling.style.display = anyVisible ? '' : 'none';
+					// toggle per-section empty placeholder (if present)
+					const maybeEmpty = section.nextElementSibling;
+					if(maybeEmpty && maybeEmpty.classList && maybeEmpty.classList.contains('section-empty')){
+						maybeEmpty.style.display = anyVisible ? 'none' : '';
+					}
+				});
+
+				// Update counter and no-results message
+				document.getElementById('resultsCounter').textContent = 'Mostrando ' + totalVisible + ' producto' + (totalVisible!==1?'s':'');
+				document.getElementById('noResultsMsg').style.display = totalVisible === 0 ? '' : 'none';
+				// persist filters to URL
+				updateUrlFilters(text, gender, sizes);
+			}
+
+			// Wire events
+			document.getElementById('productSearch').addEventListener('input', applySearchFilters);
+			document.getElementById('filterGender').addEventListener('change', applySearchFilters);
+			document.querySelectorAll('.sizeChk').forEach(ch => ch.addEventListener('change', applySearchFilters));
+			document.getElementById('btnClearFilters').addEventListener('click', ()=>{ document.getElementById('productSearch').value=''; document.getElementById('filterGender').value='all'; document.querySelectorAll('.sizeChk').forEach(c=>c.checked=false); applySearchFilters(); });
+
+			// On load: read URL filters and apply
+			window.addEventListener('DOMContentLoaded', ()=>{
+				const {q, gender, sizes} = loadUrlFilters();
+				document.getElementById('productSearch').value = q;
+				document.getElementById('filterGender').value = gender;
+				document.querySelectorAll('.sizeChk').forEach(ch => { ch.checked = sizes.includes(ch.value); });
+				// render sale badges
+				document.querySelectorAll('.product').forEach(p => {
+					if(p.dataset.sale === 'true' || p.dataset.originalPrice){
+						const price = Number(p.dataset.price || p.querySelector('.price')?.textContent.replace('$','') || 0);
+						const original = Number(p.dataset.originalPrice || p.dataset.orig || 0);
+						let pct = 0;
+						if(original && original>price) pct = Math.round((original-price)/original*100);
+						const badge = document.createElement('div'); badge.className='sale-badge';
+						badge.textContent = (pct? pct + '% OFF' : 'Oferta');
+						p.querySelector('.media').appendChild(badge);
+					}
+				});
+				applySearchFilters();
+
+				// sync header search
+				const header = document.getElementById('headerSearch');
+				if(header){
+					header.addEventListener('input', e=>{ document.getElementById('productSearch').value = e.target.value; applySearchFilters(); });
+					// keep both inputs in sync when main search changes
+					document.getElementById('productSearch').addEventListener('input', e=>{ header.value = e.target.value });
+					// expand/collapse behavior
+					const wrapper = header.closest('.header-search');
+					header.addEventListener('focus', ()=> wrapper.classList.add('expanded'));
+					header.addEventListener('blur', ()=>{ if(!header.value || header.value.trim()==='') wrapper.classList.remove('expanded') });
+					header.addEventListener('keydown', e=>{ if(e.key === 'Escape'){ header.value=''; document.getElementById('productSearch').value=''; applySearchFilters(); header.blur(); wrapper.classList.remove('expanded'); } });
+					// click icon to focus
+					const icon = wrapper.querySelector('.icon'); if(icon) icon.addEventListener('click', ()=> header.focus());
+				}
+			});
+
+
+			function openPedido(product) {
+				const f = document.getElementById('orderForm');
+				f.product.value = product;
+				window.location.hash = '#pedido';
+				f.scrollIntoView({behavior:'smooth'});
+			}
+
+				// Mobile dropdown toggles and improved dropdown behavior (click to lock, hover to show)
+				(function(){
+					document.querySelectorAll('.nav-item').forEach(item => {
+							const triggerLink = item.querySelector('a');
+							const toggleBtn = item.querySelector('.toggle-btn');
+							const dropdown = item.querySelector('.collections-dropdown, .collabs-dropdown');
+							if(!triggerLink || !dropdown) return;
+							// hover opens; leave open if 'locked' (user clicked the toggle)
+							item.addEventListener('mouseenter', ()=> item.classList.add('open'));
+							item.addEventListener('mouseleave', ()=>{ if(!item.classList.contains('locked')) item.classList.remove('open'); });
+
+							// make the main link navigate (scroll) to section when clicked
+							triggerLink.addEventListener('click', e => {
+								const href = triggerLink.getAttribute('href');
+								if(href && href.startsWith('#')){ e.preventDefault(); const target = document.querySelector(href); if(target) target.scrollIntoView({behavior:'smooth'}); }
+							});
+
+							// the small toggle button locks/unlocks the dropdown so users can move the cursor into it and click links
+							if(toggleBtn){
+								// ensure aria attributes
+								toggleBtn.setAttribute('role','button'); toggleBtn.setAttribute('aria-pressed','false');
+								// add a chevron span for rotation if missing
+								if(!toggleBtn.querySelector('.chev')){
+									const s = document.createElement('span'); s.className='chev'; s.textContent='▾'; s.style.display='inline-block'; toggleBtn.textContent=''; toggleBtn.appendChild(s);
+								}
+								toggleBtn.addEventListener('click', e => {
+									e.preventDefault(); const locked = item.classList.toggle('locked'); item.classList.toggle('open', locked); toggleBtn.setAttribute('aria-expanded', locked ? 'true' : 'false'); toggleBtn.classList.toggle('locked', locked); toggleBtn.setAttribute('aria-pressed', locked ? 'true' : 'false');
+									// announce to screen readers
+									const ann = document.getElementById('ariaAnnounce'); if(ann) ann.textContent = locked ? 'Menú anclado. Use Tab para navegar por las opciones.' : 'Menú desanclado.';
+									// if locked, trap focus inside dropdown
+									if(locked){
+										const focusables = Array.from(dropdown.querySelectorAll('a')).filter(a=>a.tabIndex!==-1);
+										if(focusables.length) {
+											// store first/last for tab wrap
+											item._firstFocusable = focusables[0];
+											item._lastFocusable = focusables[focusables.length-1];
+											// move focus to first
+											focusables[0].focus();
+										}
+									} else {
+										// remove references
+										item._firstFocusable = null; item._lastFocusable = null;
+									}
+								});
+							}
+
+							// ensure dropdown links are focusable and have role
+							dropdown.querySelectorAll('a').forEach(a=>{ a.setAttribute('tabindex','0'); a.setAttribute('role','menuitem'); });
+
+							// keyboard accessibility: Enter to toggle lock, arrows to navigate, Escape to close
+							item.addEventListener('keydown', e => {
+								const focusable = Array.from(dropdown.querySelectorAll('a'));
+								const idx = focusable.indexOf(document.activeElement);
+								if(e.key === 'Enter'){
+									// if focus is on the main link, toggle lock; otherwise follow link
+									if(document.activeElement === triggerLink){
+										e.preventDefault(); if(toggleBtn) toggleBtn.click();
+									}
+								} else if(e.key === 'ArrowDown'){
+									e.preventDefault(); if(idx < focusable.length-1) focusable[idx+1].focus(); else if(focusable.length) focusable[0].focus();
+								} else if(e.key === 'ArrowUp'){
+									e.preventDefault(); if(idx > 0) focusable[idx-1].focus(); else if(focusable.length) focusable[focusable.length-1].focus();
+								} else if(e.key === 'Escape'){
+									item.classList.remove('locked'); item.classList.remove('open'); if(toggleBtn){ toggleBtn.classList.remove('locked'); toggleBtn.setAttribute('aria-expanded','false'); toggleBtn.setAttribute('aria-pressed','false'); }
+									const ann = document.getElementById('ariaAnnounce'); if(ann) ann.textContent = 'Menú cerrado.';
+								} else if(e.key === 'Tab'){
+									// trap focus when locked
+									if(item.classList.contains('locked')){
+										// forward tab
+										if(!e.shiftKey && document.activeElement === item._lastFocusable){ e.preventDefault(); item._firstFocusable && item._firstFocusable.focus(); }
+										// backward tab
+										if(e.shiftKey && document.activeElement === item._firstFocusable){ e.preventDefault(); item._lastFocusable && item._lastFocusable.focus(); }
+									}
+								} else if(e.key === 'Home'){
+									if(focusable.length){ e.preventDefault(); focusable[0].focus(); }
+								} else if(e.key === 'End'){
+									if(focusable.length){ e.preventDefault(); focusable[focusable.length-1].focus(); }
+								}
+							});
+
+							// allow links inside dropdown to navigate smoothly and then close
+							dropdown.querySelectorAll('a').forEach(a => a.addEventListener('click', e => {
+								const href = a.getAttribute('href');
+								if(href && href.startsWith('#')){ e.preventDefault(); const target = document.querySelector(href); if(target) target.scrollIntoView({behavior:'smooth'}); }
+								// unlock after click
+								item.classList.remove('locked'); item.classList.remove('open');
+							}));
+						});
+
+					// hamburger toggle
+					const hamburger = document.getElementById('hamburger');
+					const navCenter = document.querySelector('.nav-center');
+					if(hamburger && navCenter){
+						hamburger.addEventListener('click', ()=>{ navCenter.classList.toggle('open'); hamburger.classList.toggle('open'); });
+					}
+
+					// Close panels and dropdowns with Escape key
+					document.addEventListener('keydown', e => {
+						if(e.key === 'Escape'){
+							// close cart/fav panels
+							closeCart(); closeFav();
+							// unlock and close any dropdowns
+							document.querySelectorAll('.nav-item.locked').forEach(n=>{ n.classList.remove('locked'); n.classList.remove('open'); });
+							// close any open modal
+							document.querySelectorAll('.modal[aria-hidden="false"]').forEach(m=> m.setAttribute('aria-hidden','true'));
+						}
+					});
+
+					// Close dropdowns on scroll to avoid overlay issues
+					let _scrollTimer = null;
+					window.addEventListener('scroll', () => {
+						// debounce to avoid firing too often
+						if(_scrollTimer) clearTimeout(_scrollTimer);
+						_scrollTimer = setTimeout(() => {
+							document.querySelectorAll('.nav-item.locked, .nav-item.open').forEach(n => { n.classList.remove('locked'); n.classList.remove('open'); const tb = n.querySelector('.toggle-btn'); if(tb){ tb.classList.remove('locked'); tb.setAttribute('aria-expanded','false'); } });
+						}, 120);
+					});
+
+					// global focus-trap registry (simple)
+					const _focusTraps = new Set();
+					function registerTrap(item, dropdown){
+						if(_focusTraps.has(item)) return;
+						item._recalc = ()=>{
+							const focusables = Array.from(dropdown.querySelectorAll('a')).filter(a=>a.tabIndex!==-1);
+							item._firstFocusable = focusables[0] || null;
+							item._lastFocusable = focusables[focusables.length-1] || null;
+						};
+						item._recalc();
+						item._trapHandler = e => {
+							if(e.key === 'Tab'){
+								if(!item.classList.contains('locked')) return;
+								if(!e.shiftKey && document.activeElement === item._lastFocusable){ e.preventDefault(); item._firstFocusable && item._firstFocusable.focus(); }
+								if(e.shiftKey && document.activeElement === item._firstFocusable){ e.preventDefault(); item._lastFocusable && item._lastFocusable.focus(); }
+							}
+						};
+						window.addEventListener('keydown', item._trapHandler);
+						window.addEventListener('resize', item._recalc);
+						_focusTraps.add(item);
+					}
+
+					function unregisterTrap(item){
+						if(!_focusTraps.has(item)) return;
+						window.removeEventListener('keydown', item._trapHandler);
+						window.removeEventListener('resize', item._recalc);
+						item._trapHandler = null; item._recalc = null; item._firstFocusable = null; item._lastFocusable = null;
+						_focusTraps.delete(item);
+					}
+				})();
+
+					// --- User, cart and favorites (client-side) ---
+					const STORAGE_USER = 'currentUser';
+					const STORAGE_CART = 'cart_items';
+					const STORAGE_FAV = 'fav_items';
+
+					function loadUser(){ try{return JSON.parse(localStorage.getItem(STORAGE_USER) || 'null')}catch(e){return null} }
+					function saveUser(u){ if(u) localStorage.setItem(STORAGE_USER, JSON.stringify(u)); else localStorage.removeItem(STORAGE_USER); updateUserUI(); }
+					function loadCart(){ try{return JSON.parse(localStorage.getItem(STORAGE_CART) || '[]')}catch(e){return []} }
+					function saveCart(c){ localStorage.setItem(STORAGE_CART, JSON.stringify(c)); updateCartBadge(); }
+					function loadFav(){ try{return JSON.parse(localStorage.getItem(STORAGE_FAV) || '[]')}catch(e){return []} }
+					function saveFav(f){ localStorage.setItem(STORAGE_FAV, JSON.stringify(f)); updateFavBadge(); }
+
+					function updateUserUI(){ const u = loadUser(); const btn = document.getElementById('btnUser'); if(u){ btn.textContent = u.name.split(' ')[0]; btn.title = 'Sesión: ' + u.email; } else { btn.textContent = 'Iniciar'; btn.title = 'Acceder / Registrarse'; } }
+					function updateCartBadge(){ const c = loadCart(); const btn = document.getElementById('btnCart'); btn.setAttribute('data-count', c.reduce((s,i)=> s + (i.quantity||1), 0) ); document.getElementById('cartTotal').textContent = '$' + (c.reduce((s,i)=> s + (Number(i.price||0) * (i.quantity||1)),0)); }
+					function updateFavBadge(){ const f = loadFav(); const btn = document.getElementById('btnFavorites'); btn.setAttribute('data-count', f.length); }
+
+					// open/close cart
+					function openCart(){ const p = document.getElementById('cartPanel'); p.classList.add('open'); p.setAttribute('aria-hidden','false'); renderCartItems(); }
+					function closeCart(){ const p = document.getElementById('cartPanel'); p.classList.remove('open'); p.setAttribute('aria-hidden','true'); }
+					function openAuth(){ document.getElementById('authModal').setAttribute('aria-hidden','false'); }
+					function closeAuth(){ document.getElementById('authModal').setAttribute('aria-hidden','true'); }
+
+					document.getElementById('btnCart').addEventListener('click', ()=>{ openCart(); });
+					document.getElementById('btnFavorites').addEventListener('click', ()=>{ // open favorites panel
+						renderFavItems(); openFav();
+					});
+					function openFav(){ const p = document.getElementById('favPanel'); p.classList.add('open'); p.setAttribute('aria-hidden','false'); }
+					function closeFav(){ const p = document.getElementById('favPanel'); p.classList.remove('open'); p.setAttribute('aria-hidden','true'); }
+					document.getElementById('btnUser').addEventListener('click', ()=>{ openAuth(); const u = loadUser(); const f = document.getElementById('authForm'); f.name.value = u?.name||''; f.email.value = u?.email||''; });
+
+					document.getElementById('authForm').addEventListener('submit', async e=>{ 
+						e.preventDefault(); 
+						const f = e.target; 
+						const name = f.name.value.trim();
+						const surname = f.surname.value.trim();
+						const email = f.email.value.trim();
+						const password = f.password.value || '';
+
+						// client-side validation
+						if(!name || !surname){ alert('Por favor indica nombre y apellidos.'); return; }
+						if(password.length < 8 || !/[A-Z]/.test(password) || /[A-Za-z0-9]/.test(password) === false){ alert('La contraseña debe tener mínimo 8 caracteres, al menos una mayúscula y un símbolo.'); return; }
+
+						// check server for existing emails (best-effort)
+						let emailTaken = false;
+						try{
+							const res = await fetch('/users');
+							if(res.ok){ const js = await res.json(); if(js.ok && Array.isArray(js.users)) emailTaken = js.users.some(u=> (u.email||'').toLowerCase() === email.toLowerCase()); }
+						}catch(e){ /* ignore network errors - we'll rely on POST /register to enforce uniqueness */ }
+						if(emailTaken){ alert('El email ya está registrado.'); return; }
+
+						const u = { name: name, surname: surname, email: email, password: password, ts: new Date().toISOString() };
+						// try server register endpoint, fallback to local-only
+						try{
+							const res = await fetch('/register', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(u) });
+							if(res.ok){ saveUser({ name: name, email: email, surname: surname }); showMsg('orderMsg', 'Registro sincronizado con servidor.'); }
+							else {
+								const j = await res.json().catch(()=>({}));
+								saveUser({ name: name, email: email, surname: surname });
+								showMsg('orderMsg', 'Registro guardado localmente (server rechazó: ' + (j.error||'error') + ').', false);
+							}
+						}catch(err){ saveUser({ name: name, email: email, surname: surname }); showMsg('orderMsg', 'Registro guardado localmente (sin conexión).'); }
+						closeAuth(); 
+					});
+
+					function _imageOrPlaceholder(src, alt){ if(src){ return `<img src="${src}" alt="${alt||''}" onerror="this.src='https://via.placeholder.com/160x120?text=No+Image'">`; } return `<div class="placeholder-img" style="width:64px;height:64px;border-radius:8px">No image</div>`; }
+
+					function renderCartItems(){ const items = loadCart(); const container = document.getElementById('cartItems'); if(items.length===0){ container.innerHTML = '<div class="section-empty">Tu cesta está vacía.</div>'; } else { container.innerHTML = items.map((it, idx)=>{
+						  const imgHtml = _imageOrPlaceholder(it.image, it.name);
+						  return `<div style="display:flex;align-items:center;gap:.6rem;padding:.5rem;border-bottom:1px solid #f6f6fb"><div style="flex:0 0 64px">${imgHtml}</div><div style="flex:1"><strong style="display:block">${it.name}</strong><div class="muted">$${it.price} · Talla: ${it.size||'-'}</div></div><div style="display:flex;flex-direction:column;gap:.4rem"><input type="number" value="${it.quantity||1}" min="1" data-idx="${idx}" class="cart-qty" style="width:64px;padding:.2rem;border-radius:6px;border:1px solid #eee"><button class="btn" data-idx="${idx}" onclick="removeCartItem(${idx})">Eliminar</button></div></div>`
+					}).join(''); }
+								updateCartBadge();
+								// wire quantity changes
+								container.querySelectorAll('.cart-qty').forEach(inp => inp.addEventListener('change', e=>{ const i = Number(e.target.dataset.idx); const v = Number(e.target.value||1); const items = loadCart(); items[i].quantity = v; saveCart(items); renderCartItems(); }));
+							}
+
+					function renderFavItems(){ const fav = loadFav(); const container = document.getElementById('favItems'); if(!fav || fav.length===0){ container.innerHTML = '<div class="section-empty">No hay favoritos</div>'; return; } container.innerHTML = fav.map((f, idx)=>{
+						const imgHtml = _imageOrPlaceholder(f.image, f.name);
+						return `<div style="display:flex;align-items:center;gap:.6rem;padding:.5rem;border-bottom:1px solid #f6f6fb"><div style="flex:0 0 64px">${imgHtml}</div><div style="flex:1"><strong style="display:block">${f.name}</strong><div class="muted">$${f.price}</div></div><div style="display:flex;flex-direction:column;gap:.4rem"><button class="btn" data-idx="${idx}" onclick="favToCart(${idx})">Añadir a cesta</button><button class="btn" data-idx="${idx}" onclick="removeFav(${idx})">Eliminar</button></div></div>`
+					}).join(''); }
+
+					function favToCart(idx){ const fav = loadFav(); const rec = fav[idx]; if(!rec) return; const item = { name: rec.name, price: rec.price, image: rec.image, size: null, quantity: 1 }; addToCart(item); removeFav(idx); openCart(); }
+					function removeFav(idx){ const fav = loadFav(); fav.splice(idx,1); saveFav(fav); renderFavItems(); updateFavBadge(); }
+
+					function addToCart(product){ const cart = loadCart(); const existing = cart.find(c => c.name === product.name && c.size === product.size); if(existing){ existing.quantity = (existing.quantity||1) + (product.quantity||1); } else { cart.push(product); } saveCart(cart); updateCartBadge(); }
+					function removeCartItem(idx){ const cart = loadCart(); cart.splice(idx,1); saveCart(cart); renderCartItems(); }
+
+					// Quick add buttons on product cards: move favorite to title and ensure uniform layout
+					document.querySelectorAll('.product').forEach(p => {
+						// ensure img fallback
+						const img = p.querySelector('.media img');
+						if(img){ img.setAttribute('data-default','1'); img.onerror = function(){ this.src = 'https://via.placeholder.com/600x400?text=No+Image'; } }
+						// create favorite icon next to title
+						const title = p.querySelector('h4');
+						if(title){
+							const favSpan = document.createElement('span'); favSpan.className='product-fav'; favSpan.style.marginLeft='8px'; favSpan.style.cursor='pointer'; favSpan.setAttribute('aria-label','Añadir a favoritos');
+							const heart = document.createElement('span'); heart.textContent = '❤'; heart.style.fontSize='1.05rem'; favSpan.appendChild(heart);
+							title.appendChild(favSpan);
+							const updateHeart = ()=>{ const fav = loadFav(); const exists = fav.some(f=>f.name === p.dataset.name); heart.textContent = exists ? '♥' : '❤'; };
+							favSpan.addEventListener('click', ()=>{ const fav = loadFav(); const rec = { name: p.dataset.name, price: p.dataset.price, image: p.querySelector('img')?.src }; const idx = fav.findIndex(f=>f.name === rec.name); if(idx === -1){ fav.push(rec); saveFav(fav); } else { fav.splice(idx,1); saveFav(fav); } updateHeart(); updateFavBadge(); });
+							updateHeart();
+						}
+						// add-to-cart small button under price (uniform size)
+						const addBtn = document.createElement('button'); addBtn.className='btn'; addBtn.style.marginTop='.6rem'; addBtn.style.width='100%'; addBtn.textContent='Añadir a cesta';
+						addBtn.onclick = ()=> openModal(p.dataset.name || p.querySelector('h4')?.textContent);
+						p.appendChild(addBtn);
+					});
+
+					// include user/cart/favorites snapshot when storing submission
+					const _storeSubmission = storeSubmission;
+					storeSubmission = function(data){
+						const user = loadUser();
+						const cart = loadCart();
+						const fav = loadFav();
+						data.user = user || null;
+						// attach full snapshots if this is an order or checkout
+						if(data.type === 'order' || data.type === 'checkout' || data.type === 'contact'){
+							data.cart = cart;
+							data.favorites = fav;
+						}
+						_storeSubmission.call(this, data);
+					}
+
+					// checkout handler
+					document.getElementById('checkoutBtn').addEventListener('click', async ()=>{
+						const cart = loadCart(); if(cart.length===0){ alert('La cesta está vacía'); return; }
+						const user = loadUser(); if(!user){ alert('Por favor, inicia sesión o regístrate antes de comprar.'); openAuth(); return; }
+						const data = { type: 'checkout', user: user, cart: cart, favorites: loadFav(), ts: new Date().toISOString() };
+						// Try server /checkout first, fall back to local storeSubmission
+						try{
+							const res = await fetch('/checkout', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+							if(res.ok){
+								// also store locally for admin UI consistency
+								storeSubmission(data);
+								saveCart([]); renderCartItems(); closeCart(); alert('Compra registrada en servidor.');
+							} else {
+								storeSubmission(data); saveCart([]); renderCartItems(); closeCart(); alert('Compra guardada localmente (server rechazó).');
+							}
+						}catch(err){
+							// server unreachable — fallback
+							storeSubmission(data); saveCart([]); renderCartItems(); closeCart(); alert('Sin conexión: compra guardada localmente.');
+						}
+					});
+
+					// initialize UI
+					updateUserUI(); updateCartBadge(); updateFavBadge();
+	</script>
+</body>
+</html>
+
