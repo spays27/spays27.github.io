@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Administración</title>
+  <link rel="stylesheet" href="miestilo.css">
+</head>
+<body>
+  <header class="site-header"><div class="container"><h1 class="brand">AIR SPORT — Admin</h1><a href="prueba2.html">Volver</a></div></header>
+  <main class="container form-section">
+    <h2>Registros</h2>
+
+    <div id="authArea">
+      <div id="setPassArea">
+        <p>Establece una contraseña para proteger el panel Admin (almacenada localmente).</p>
+        <input id="newPass" type="password" placeholder="Nueva contraseña" style="max-width:300px;margin-right:.5rem">
+        <button id="btnSetPass" class="btn primary">Establecer</button>
+      </div>
+      <div id="loginArea" style="display:none">
+        <p>Introduce contraseña para entrar:</p>
+        <input id="pass" type="password" placeholder="Contraseña" style="max-width:300px;margin-right:.5rem">
+        <button id="btnLogin" class="btn">Entrar</button>
+      </div>
+    </div>
+
+    <div id="panel" style="display:none">
+      <p id="count">Cargando...</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem;align-items:center">
+        <button id="btnRefresh" class="btn">Refrescar</button>
+        <button id="btnDownload" class="btn primary">Descargar JSONL</button>
+        <button id="btnExportJSON" class="btn">Exportar JSON</button>
+        <button id="btnClear" class="btn">Borrar local</button>
+        <button id="btnSaveFile" class="btn">Guardar en archivo (experimental)</button>
+  <button id="btnSyncServer" class="btn">Sync servidor</button>
+  <span id="syncResult" style="margin-left:.6rem;color:#333"></span>
+        <input id="fileInput" type="file" accept=".jsonl,.json" style="display:none">
+        <button id="btnImport" class="btn">Importar JSON/JSONL</button>
+        <label style="display:inline-flex;align-items:center;gap:.4rem;margin-left:8px"><input id="autoDownload" type="checkbox"> Auto-descargar al guardar</label>
+        <label style="display:inline-flex;align-items:center;gap:.4rem;margin-left:8px"><input id="autoSaveToFile" type="checkbox"> Auto-guardar en archivo seleccionado</label>
+        <button id="btnChooseHandle" class="btn">Elegir archivo de registros...</button>
+        <span id="chosenHandleName" class="muted" style="margin-left:.4rem">(ninguno)</span>
+        <div id="autosaveIndicator" class="autosave-indicator off" style="margin-left:12px">
+          <span class="dot"></span>
+          <small id="autosaveText">Auto-save: Off</small>
+        </div>
+        <button id="btnLogout" class="btn">Cerrar sesión</button>
+      </div>
+
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem;align-items:center">
+        <label>Tipo:
+          <select id="filterType">
+            <option value="all">Todos</option>
+            <option value="contact">Contacto</option>
+            <option value="order">Pedido</option>
+          </select>
+        </label>
+        <label>Desde:
+          <input id="filterFrom" type="date">
+        </label>
+        <label>Hasta:
+          <input id="filterTo" type="date">
+        </label>
+        <label>Buscar texto:
+          <input id="filterText" type="search" placeholder="nombre, email, producto...">
+        </label>
+        <button id="btnApplyFilters" class="btn">Aplicar filtros</button>
+      </div>
+
+      <pre id="preview" style="white-space:pre-wrap;max-height:400px;overflow:auto;border:1px solid #eee;padding:1rem;border-radius:6px;background:#fff"></pre>
+    </div>
+  </main>
+  <footer class="site-footer"><div class="container">© 2025 AIR SPORT</div></footer>
+
+  <script>
+    // --- Utilities ---
+    function loadRegistros(){ try { return JSON.parse(localStorage.getItem('registros')||'[]') } catch(e){ return [] } }
+    function saveRegistros(arr){ localStorage.setItem('registros', JSON.stringify(arr)) }
+
+    // Simple renderer with optional filtered list
+    function renderList(list){ document.getElementById('count').textContent = list.length + ' registros'; document.getElementById('preview').textContent = list.map(d=>JSON.stringify(d, null, 2)).join('\n\n'); }
+
+    // --- Auth (client-side) ---
+    const PASS_KEY = 'admin_pass_hash_v1';
+
+    async function sha256(str){
+      const enc = new TextEncoder().encode(str);
+      const hash = await crypto.subtle.digest('SHA-256', enc);
+      return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');
+    }
+
+    async function setPassword(pw){ const h = await sha256(pw); localStorage.setItem(PASS_KEY, h); }
+    async function checkPassword(pw){ const h = await sha256(pw); return h === localStorage.getItem(PASS_KEY); }
+
+    function showPanel(authenticated){ document.getElementById('authArea').style.display = authenticated ? 'none' : 'block'; document.getElementById('panel').style.display = authenticated ? 'block' : 'none'; }
+
+    // Init auth UI
+    (function(){
+      const has = !!localStorage.getItem(PASS_KEY);
+      document.getElementById('setPassArea').style.display = has ? 'none' : 'block';
+      document.getElementById('loginArea').style.display = has ? 'block' : 'none';
+      showPanel(false);
+    })();
+
+    document.getElementById('btnSetPass').addEventListener('click', async ()=>{
+      const p = document.getElementById('newPass').value.trim(); if(!p){ alert('Introduce una contraseña'); return; }
+      await setPassword(p); document.getElementById('newPass').value = ''; alert('Contraseña establecida. Ahora inicia sesión.');
+      document.getElementById('setPassArea').style.display='none'; document.getElementById('loginArea').style.display='block';
+    });
+
+    document.getElementById('btnLogin').addEventListener('click', async ()=>{
+      const p = document.getElementById('pass').value; if(!p) return alert('Introduce contraseña');
+      const ok = await checkPassword(p);
+      if(!ok) return alert('Contraseña incorrecta');
+      document.getElementById('pass').value = '';
+      showPanel(true);
+      // try to restore handle
+      const restored = await restoreHandle();
+      if(restored){ window._admin_handle = restored; try{ document.getElementById('chosenHandleName').textContent = restored.name || '(archivo seleccionado)'; }catch(e){} }
+      applyFiltersAndRender();
+    });
+
+    // set initial autosave indicator
+    (function(){
+      const ind = document.getElementById('autosaveIndicator');
+      const txt = document.getElementById('autosaveText');
+      if(localStorage.getItem('admin_auto_save') === '1'){
+        ind.classList.remove('off'); ind.classList.add('on'); if(txt) txt.textContent = 'Auto-save: On';
+      } else { ind.classList.remove('on'); ind.classList.add('off'); if(txt) txt.textContent = 'Auto-save: Off'; }
+    })();
+
+    document.getElementById('btnLogout').addEventListener('click', ()=>{ showPanel(false); });
+
+    // --- File / export / import ---
+    document.getElementById('btnRefresh').addEventListener('click', applyFiltersAndRender);
+    document.getElementById('btnClear').addEventListener('click', ()=>{ if(!confirm('Borrar todos los registros locales?')) return; saveRegistros([]); applyFiltersAndRender(); });
+
+    function timestamp(){ const d = new Date(); const s = d.toISOString().replace(/[:.]/g,'-'); return s }
+    function shouldAutoDownload(){ return localStorage.getItem('admin_auto_download') === '1' }
+
+    document.getElementById('autoDownload').addEventListener('change', (e)=>{ localStorage.setItem('admin_auto_download', e.target.checked ? '1' : '0') });
+    // set toggle from storage
+    document.getElementById('autoDownload').checked = shouldAutoDownload();
+
+    document.getElementById('btnDownload').addEventListener('click', ()=>{
+      const data = loadRegistros();
+      const blob = new Blob(data.map(d=>JSON.stringify(d, null, 0) + '\n'), {type:'text/plain;charset=utf-8'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'registros-' + timestamp() + '.jsonl'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('btnExportJSON').addEventListener('click', ()=>{
+      const data = loadRegistros();
+      const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json;charset=utf-8'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'registros-' + timestamp() + '.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('btnImport').addEventListener('click', ()=> document.getElementById('fileInput').click());
+    document.getElementById('fileInput').addEventListener('change', async e=>{
+      const f = e.target.files[0]; if(!f) return;
+      const text = await f.text();
+      let arr = [];
+      try {
+  if(f.name.endsWith('.jsonl')){ arr = text.split(/\r?\n/).filter(Boolean).map(l=>JSON.parse(l)); }
+        else { arr = JSON.parse(text); if(!Array.isArray(arr)) arr = [arr]; }
+  const existing = loadRegistros(); saveRegistros(existing.concat(arr)); applyFiltersAndRender(); alert('Importado ' + arr.length + ' registros.');
+  if(shouldAutoDownload()) document.getElementById('btnDownload').click();
+      } catch (err) { alert('Error importando: ' + err.message) }
+    });
+
+    document.getElementById('btnSaveFile').addEventListener('click', async ()=>{
+      const data = loadRegistros();
+      if(!window.showSaveFilePicker){ alert('Tu navegador no soporta escritura directa. Usa Descargar.'); return; }
+      try {
+        const handle = await window.showSaveFilePicker({ suggestedName: 'registros.jsonl', types:[{description:'JSON Lines', accept:{'text/plain':['.jsonl','.txt']}}] });
+        await saveHandle(handle);
+        await writeHandle(handle, data);
+        alert('Guardado en archivo.');
+        if(shouldAutoDownload()) document.getElementById('btnDownload').click();
+      } catch(e){ console.error(e); alert('Cancelado o error: ' + (e.message || e)); }
+    });
+
+    // File handle persistence (uses get/set on window.showSaveFilePicker handles via serializable token if available)
+    const HANDLE_KEY = 'admin_file_handle_token_v1';
+
+    async function saveHandle(handle){
+      try{
+        // try to store the handle in IndexedDB using the origin-private file system; here we use the serializable handle if supported
+        if(handle && handle.name){
+          window._admin_handle = handle;
+          // try to persist handle in IndexedDB (serializing handles is supported in Chromium)
+          try{
+            const dbReq = indexedDB.open('adminHandles', 1);
+            dbReq.onupgradeneeded = ()=> dbReq.result.createObjectStore('handles');
+            dbReq.onsuccess = ()=>{
+              const db = dbReq.result;
+              const tx = db.transaction('handles','readwrite');
+              tx.objectStore('handles').put(handle, 'registros');
+              tx.oncomplete = ()=> db.close();
+            };
+          }catch(e){
+            // fallback: store only filename marker
+            console.warn('IndexedDB handle store failed', e);
+            localStorage.setItem(HANDLE_KEY, handle.name || 'chosen');
+          }
+          document.getElementById('chosenHandleName').textContent = handle.name || '(archivo seleccionado)';
+        }
+      }catch(e){ console.warn('no se pudo persistir handle', e); }
+    }
+
+    // try to restore handle from IndexedDB on load
+    async function restoreHandle(){
+      try{
+        if(!window.indexedDB) return null;
+        return await new Promise((resolve, reject)=>{
+          const req = indexedDB.open('adminHandles',1);
+          req.onsuccess = ()=>{
+            const db = req.result;
+            const tx = db.transaction('handles','readonly');
+            const get = tx.objectStore('handles').get('registros');
+            get.onsuccess = ()=>{ resolve(get.result || null); db.close(); };
+            get.onerror = ()=>{ resolve(null); db.close(); };
+          };
+          req.onerror = ()=> resolve(null);
+        });
+      }catch(e){ console.warn('restoreHandle failed', e); return null; }
+    }
+
+    async function writeHandle(handle, data){
+      if(!handle) throw new Error('No handle');
+      const writable = await handle.createWritable();
+      for(const d of data) await writable.write(JSON.stringify(d) + '\n');
+      await writable.close();
+    }
+
+    document.getElementById('btnChooseHandle').addEventListener('click', async ()=>{
+      if(!window.showSaveFilePicker){ alert('Tu navegador no soporta showSaveFilePicker. Usa "Guardar en archivo" o descarga.'); return; }
+      try{
+        const handle = await window.showSaveFilePicker({ suggestedName: 'registros.jsonl', types:[{description:'JSON Lines', accept:{'text/plain':['.jsonl','.txt']}}] });
+        await saveHandle(handle);
+        alert('Archivo seleccionado: ' + (handle.name||'(sin nombre)'));
+      }catch(e){ console.warn(e); }
+    });
+
+    // --- Sync servidor (bulk upload) ---
+    document.getElementById('btnSyncServer').addEventListener('click', async ()=>{
+      const arr = loadRegistros();
+      const pending = arr.filter(r => !r.uploaded);
+      if(!pending || pending.length === 0){ alert('No hay registros pendientes para sincronizar.'); return; }
+      if(!confirm('Enviar ' + pending.length + ' registros pendientes al servidor?')) return;
+      const span = document.getElementById('syncResult'); span.textContent = 'Enviando...';
+      try{
+        const res = await fetch('/bulk', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(pending) });
+        if(res.ok){ const j = await res.json().catch(()=>({})); const written = j.written || pending.length;
+          // mark records as uploaded instead of deleting
+          const now = new Date().toISOString();
+          let marked = 0;
+          const newArr = arr.map(r => { if(!r.uploaded){ r.uploaded = true; r.uploadedAt = now; marked++; } return r; });
+          saveRegistros(newArr);
+          applyFiltersAndRender();
+          span.textContent = 'Sincronizados: ' + written + '. Marcados localmente.';
+        } else {
+          const txt = await res.text().catch(()=>null);
+          span.textContent = 'Error servidor: ' + res.status + (txt? (' - ' + txt) : '');
+        }
+      }catch(e){ span.textContent = 'Error de red: ' + (e.message || e); }
+      setTimeout(()=>{ if(span) span.textContent = ''; }, 10000);
+    });
+
+    // Auto-save toggle
+    const autoSaveCheckbox = document.getElementById('autoSaveToFile');
+    autoSaveCheckbox.checked = localStorage.getItem('admin_auto_save') === '1';
+    autoSaveCheckbox.addEventListener('change', ()=>{ localStorage.setItem('admin_auto_save', autoSaveCheckbox.checked ? '1' : '0') });
+
+    // Listen for updates and perform auto-save if requested
+    window.addEventListener('registros:updated', async ()=>{
+      // visual indicator: saving -> on -> off
+      const indicator = document.getElementById('autosaveIndicator');
+      const text = document.getElementById('autosaveText');
+      const setState = (s, msg)=>{ indicator.classList.remove('on','saving','off'); indicator.classList.add(s); if(text) text.textContent = msg; };
+      try{
+        if(localStorage.getItem('admin_auto_save') === '1'){
+          const handle = window._admin_handle; // in-session handle
+          if(!handle){ alert('Auto-guardar activado pero no se ha seleccionado archivo. Pulsa "Elegir archivo de registros..." en Admin.'); return; }
+          setState('saving','Auto-save: Guardando...');
+          const data = loadRegistros();
+          await writeHandle(handle, data);
+          setState('on','Auto-save: OK');
+          setTimeout(()=> setState('on','Auto-save: OK'), 1200);
+        } else {
+          setState('off','Auto-save: Off');
+        }
+      }catch(e){ console.error('Auto-save failed', e); setState('off','Auto-save: Error'); }
+    });
+
+    // --- Filtering & searching ---
+    function applyFiltersAndRender(){
+      const all = loadRegistros();
+      const type = document.getElementById('filterType').value;
+      const from = document.getElementById('filterFrom').value;
+      const to = document.getElementById('filterTo').value;
+      const text = (document.getElementById('filterText').value || '').toLowerCase().trim();
+
+      let res = all.filter(item => {
+        if(type !== 'all' && item.type !== type) return false;
+        if(from){ const d = new Date(item.ts || item.receivedAt || ''); if(isNaN(d)) return false; if(d < new Date(from)) return false; }
+        if(to){ const d = new Date(item.ts || item.receivedAt || ''); if(isNaN(d)) return false; const toDate = new Date(to); toDate.setDate(toDate.getDate()+1); if(d >= toDate) return false; }
+        if(text){ const s = JSON.stringify(item).toLowerCase(); if(!s.includes(text)) return false; }
+        return true;
+      });
+      renderList(res);
+    }
+
+    document.getElementById('btnApplyFilters').addEventListener('click', applyFiltersAndRender);
+
+    // Render initially (if no auth set, show set-pass; otherwise show login)
+    // applyFiltersAndRender will be called after login
+    
+  </script>
+</body>
+</html>
